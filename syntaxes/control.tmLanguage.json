@@ -1,0 +1,96 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Control",
+    "scopeName": "source.control",
+    "fileTypes": ["ctl"],
+    "patterns": [
+        {
+            "include": "#comments"
+        },
+        {
+            "include": "#keywords"
+        },
+        {
+            "include": "#strings"
+        },
+        {
+            "include": "#types"
+        },
+        {
+            "include": "#functions"
+        },
+        {
+            "include": "#numbers"
+        }
+    ],
+    "repository": {
+        "comments": {
+            "patterns": [
+                {
+                    "name": "comment.line.double-slash.control",
+                    "match": "//.*$"
+                },
+                {
+                    "name": "comment.block.control",
+                    "begin": "/\\*",
+                    "end": "\\*/"
+                }
+            ]
+        },
+        "keywords": {
+            "patterns": [
+                {
+                    "name": "keyword.control.control",
+                    "match": "\\b(struct|return|if|else|for|while|do|switch|case|break|continue)\\b"
+                },
+                {
+                    "name": "storage.type.control",
+                    "match": "\\b(int|dyn_int|string|dyn_string|vector|void|bool|dyn_bool|float|dyn_float|char|dyn_char|long|dyn_long|short|dyn_short|unsigned|dyn_unsigned|signed|dyn_signed|dyn_anytype|anytype|dyn_anytype)\\b"
+                },
+                {
+                    "name": "constant.language.control",
+                    "match": "\\b(true|false|nullptr|TRUE|FALSE|NULLPTR)\\b"
+                }
+            ]
+        },
+        "strings": {
+            "name": "string.quoted.double.control",
+            "begin": "\"",
+            "end": "\"",
+            "patterns": [
+                {
+                    "name": "constant.character.escape.control",
+                    "match": "\\\\[\\'\\\"\\\\abfnrtv]"
+                }
+            ]
+        },
+        "types": {
+            "patterns": [
+                {
+                    "name": "support.type.control",
+                    "match": "\\b[Ss][tT][Rr][Uu][Cc][Tt]\\s+[a-zA-Z_]\\w*"
+                },
+                {
+                    "name": "support.type.control",
+                    "match": "\\b[a-zA-Z_]\\w*(?=\\s*<)"
+                }
+            ]
+        },
+        "functions": {
+            "name": "entity.name.function.control",
+            "match": "\\b[a-zA-Z_]\\w*\\s*(?=\\()"
+        },
+        "numbers": {
+            "patterns": [
+                {
+                    "name": "constant.numeric.integer.control",
+                    "match": "\\b[0-9]+\\b"
+                },
+                {
+                    "name": "constant.numeric.float.control",
+                    "match": "\\b[0-9]+\\.[0-9]+\\b"
+                }
+            ]
+        }
+    }
+}

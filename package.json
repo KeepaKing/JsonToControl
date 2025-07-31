@@ -1,19 +1,17 @@
 {
-	"name": "jsontodart",
-	"displayName": "Json To Dart",
-	"description": "Plain object to Dart Object",
-	"version": "0.2.2",
-	"publisher": "MuhammadNorzariman",
+	"name": "jsontocontrol",
+	"displayName": "Json To Control",
+	"description": "Plain object to Control Object",
+	"version": "0.0.1",
+	"publisher": "KeepaKing",
 	"keywords": [
 		"json",
-		"dart",
-		"flutter",
-		"json to dart",
+		"Control",
 		"plain object"
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/shiburagi/JsonToDart.git"
+		"url": "https://github.com/KeepaKing/JsonToControl.git"
 	},
 	"engines": {
 		"vscode": "^1.52.0"
@@ -22,45 +20,53 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:jsontodart.convertFromClipboard",
-		"onCommand:jsontodart.convertFromClipboardToFile",
-		"onCommand:jsontodart.convertFromClipboardToFolder"
+		"onCommand:jsontocontrol.convertFromClipboard",
+		"onCommand:jsontocontrol.convertFromClipboardToFile",
+		"onCommand:jsontocontrol.convertFromClipboardToFolder"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"menus": {
 			"explorer/context": [
 				{
-					"when": "resourceLangId == dart",
-					"command": "jsontodart.convertFromClipboardToFile",
-					"group": "jsontodart@1"
+					"when": "resourceLangId == control",
+					"command": "jsontocontrol.convertFromClipboardToFile",
+					"group": "jsontocontrol@1"
 				},
 				{
 					"when": "explorerResourceIsFolder",
-					"command": "jsontodart.convertFromClipboardToFolder",
-					"group": "jsontodart@1"
+					"command": "jsontocontrol.convertFromClipboardToFolder",
+					"group": "jsontocontrol@1"
 				}
 			],
 			"editor/context": [
 				{
-					"when": "resourceLangId == dart",
-					"command": "jsontodart.convertFromClipboardToFile",
-					"group": "jsontodart@1"
+					"when": "resourceLangId == control",
+					"command": "jsontocontrol.convertFromClipboardToFile",
+					"group": "jsontocontrol@1"
 				}
 			]
 		},
 		"commands": [
 			{
-				"command": "jsontodart.convertFromClipboard",
-				"title": "JsonToDart: Convert JSON from Clipboard"
+				"command": "jsontocontrol.convertFromClipboard",
+				"title": "JsonToControl: Convert JSON from Clipboard"
 			},
 			{
-				"command": "jsontodart.convertFromClipboardToFile",
+				"command": "jsontocontrol.convertFromClipboardToFile",
 				"title": "Convert JSON from Clipboard Here"
 			},
 			{
-				"command": "jsontodart.convertFromClipboardToFolder",
+				"command": "jsontocontrol.convertFromClipboardToFolder",
 				"title": "Convert JSON from Clipboard Here"
+			}
+		],
+		"languages": [
+			{
+				"id": "control",
+				"aliases": ["Control Language", "control"],
+				"extensions": [".ctl"],
+				"configuration": "./language-configuration.json"
 			}
 		]
 	},
