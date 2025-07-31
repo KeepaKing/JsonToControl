@@ -119,37 +119,47 @@ class JsonToControl {
     }
 
     private generateStructDoc(className: string, description: string = ''): string[] {
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const year = now.getFullYear();
+        const formattedDate = `${day}-${month}-${year}`;
+        
         return [
             '/**',
             ` * @brief ${description || className} structure`,
             ' * @details Auto-generated from JSON',
             ' * @version 0.1',
-            ' * @date ' + new Date().toISOString().split('T')[0],
+            ` * @date ${formattedDate}`,
             ' */'
         ];
     }
+    
+    
+    private generateStructNote(json: any, className: string): string[] {
+        let structNote = [];
+        for (const [key, value] of Object.entries(json)) {
+            const fieldName = this.toSnakeCase(key);
+            const typeInfo = this.getControlType(value);
+            structNote.push(` *   ${fieldName} <${typeInfo.type}> \t//`);
+        }
 
-    // private generateFieldDoc(fieldName: string, type: string, description: string = ''): string[] {
-    //     return [
-    //         '\t/**',
-    //         `\t * @brief ${description || fieldName}`,
-    //         `\t * @type {${type}}`,
-    //         '\t */'
-    //     ];
-    // }
-
-
-    // private generateFieldDoc(fieldName: string, type: string, description: string = ''): string[] {
-    //     return [
-    //         '// ' + description 
-    //     ];
-    // }
+        return [
+            '/**',
+            ` * @brief Structure fields`,
+            ' * @details Auto-generated from JSON',
+            ` * {`,
+            ...structNote,
+            ` * }`,
+            ' */'
+        ];
+    }
 
     private generateFromMappingMethod(className: string, fields: {name: string, type: TypeInfo}[]): string[] {
         const lines: string[] = [];
         const varName = className[0].toLowerCase() + className.slice(1);
         
-        lines.push(`public ${className} ${this.toPascalCase(className)}MapToObject(mapping data = makeMapping())`);
+        lines.push(`public ${className} MappingTo${className}(mapping data = makeMapping())`);
         lines.push('{');
         lines.push(`\t${className} ${varName} = new ${className}();`);
         
@@ -168,10 +178,11 @@ class JsonToControl {
                 lines.push('\t}');
             } else if (field.type.isObject) {
                 lines.push(`\tif (mappingHasKey(data, "${fieldName}")) {`);
-                lines.push(`\t\t${fieldAccess} = ${this.toPascalCase(field.type.type)}MapToObject(${dataAccess});`);
+                lines.push(`\t\t${fieldAccess} = MappingTo${this.toPascalCase(field.type.type)}(${dataAccess});`);
                 lines.push('\t} else {');
-                lines.push(`\t\t${fieldAccess} = new ${this.toPascalCase(field.type.type)}();`);
+                lines.push(`\t\t${fieldAccess} = ${this.getDefaultValue(field.type)};`);
                 lines.push('\t}');
+
             } else {
                 lines.push(`\t${fieldAccess} = mappingHasKey(data, "${fieldName}") ? ${dataAccess} : ${this.getDefaultValue(field.type)};`);
             }
@@ -203,7 +214,7 @@ class JsonToControl {
                 lines.push(`\t\tdata["${fieldName}"] = ${fieldName}Data;`);
                 lines.push('\t}');
             } else if (field.type.isObject) {
-                lines.push(`\tdata["${fieldName}"] = ${this.toPascalCase(field.type.type)}ToMapping(${fieldAccess});`);
+                lines.push(`\tdata["${fieldName}"] = ${this.toPascalCase(field.name)}ToMapping(${fieldAccess});`);
             } else {
                 lines.push(`\tdata["${fieldName}"] = ${fieldAccess};`);
             }
@@ -331,12 +342,8 @@ private generateArrayAssignment(fieldName: string, typeInfo: TypeInfo, valueAcce
         const typeInfo = this.getControlType(value);
         fields.push({ name: fieldName, type: typeInfo });
         
-        // Add field documentation
-        // result.push(...this.generateFieldDoc(fieldName, typeInfo.type));
-        
         // Add field definition
         result.push(`\t${typeInfo.type}\t${fieldName};`);
-        // result.push(''); // Empty line between fields
     }
 
     result.push('};');
