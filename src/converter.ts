@@ -56,7 +56,7 @@ class JsonToControl {
         this.useNum = value;
     }
 
-    private getControlType(value: any): TypeInfo {
+    private getControlType(value: any, parentKey: string = ''): TypeInfo {
         const typeInfo = new TypeInfo('');
 
         if (value === null || value === undefined) {
@@ -83,7 +83,7 @@ class JsonToControl {
                 if (Array.isArray(value)) {
                     typeInfo.isArray = true;
                     if (value.length > 0) {
-                        const itemType = this.getControlType(value[0]);
+                        const itemType = this.getControlType(value[0], parentKey);
                         typeInfo.itemType = itemType;
                         typeInfo.type = itemType.isPrimitive ? 
                             `dyn_${itemType.type}` : 
@@ -92,8 +92,9 @@ class JsonToControl {
                         typeInfo.type = 'dyn_any';
                     }
                 } else {
-                    typeInfo.type = 'mapping';
-                    typeInfo.isObject = true;
+                    // For objects, use the parent key to create a proper type name
+                typeInfo.type = this.toPascalCase(parentKey) || 'mapping';
+                typeInfo.isObject = true;
                 }
                 break;
             default:
@@ -178,7 +179,7 @@ class JsonToControl {
                 lines.push('\t}');
             } else if (field.type.isObject) {
                 lines.push(`\tif (mappingHasKey(data, "${fieldName}")) {`);
-                lines.push(`\t\t${fieldAccess} = MappingTo${this.toPascalCase(field.type.type)}(${dataAccess});`);
+                lines.push(`\t\t${fieldAccess} = MappingTo${this.toPascalCase(field.name)}(${dataAccess});`);
                 lines.push('\t} else {');
                 lines.push(`\t\t${fieldAccess} = ${this.getDefaultValue(field.type)};`);
                 lines.push('\t}');
@@ -291,7 +292,7 @@ private generateArrayInitialization(fieldName: string, typeInfo: TypeInfo): stri
             lines.push(`${fieldName} = makeVector<${itemType}>();`);
         }
     } else {
-        lines.push(`${fieldName} = makeDynAny();`);
+        lines.push(`${fieldName} = makeDynAnytype();`);
     }
     
     return lines;
@@ -339,7 +340,7 @@ private generateArrayAssignment(fieldName: string, typeInfo: TypeInfo, valueAcce
     // Process fields
     for (const [key, value] of Object.entries(json)) {
         const fieldName = this.toSnakeCase(key);
-        const typeInfo = this.getControlType(value);
+        const typeInfo = this.getControlType(value, key);
         fields.push({ name: fieldName, type: typeInfo });
         
         // Add field definition
